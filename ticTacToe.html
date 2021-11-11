@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Mochiy+Pop+P+One&display=swap" rel="stylesheet">
+        <style type="text/css">
+            * {
+                font-family: 'Mochiy Pop P One', sans-serif;
+                color: rosybrown;
+                font-size: 16px;
+            }
+            h1 {
+                font-size: 3rem;
+                text-align: center;
+            }
+            table {
+                margin: 0 auto;
+            }
+            td {
+                border:1px double rosybrown;
+                width: 50px;
+                height: 50px;
+                font-size: 2rem;
+                text-align: center;
+            }
+            #centerfold {
+                margin-left: auto;
+                margin-right: auto;
+                margin-top: 250px;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="centerfold">
+            <h1>Tic Tac Toe</h1>
+            <table>
+                <tbody>
+                    <tr>
+                        <td id="box10"></td>
+                        <td id="box11"></td>
+                        <td id="box12"></td>
+                    </tr>
+                    <tr>
+                        <td id="box20"></td>
+                        <td id="box21"></td>
+                        <td id="box22"></td>
+                    </tr>
+                    <tr>
+                        <td id="box30"></td>
+                        <td id="box31"></td>
+                        <td id="box32"></td>
+                    </tr>
+                </tbody>
+            </table>
+            <div style="margin-top: 10px; display: flex; justify-content: center;">
+                <button id="playerX" style="color: royalblue">Player 1: X</button>
+                <button id="playerO" style="color: sienna; margin-left: 50px">Player 2: O</button>
+            </div>
+            <div style="margin-top: 10px; display: flex; justify-content: center;">
+                <div style="color: royalblue">Player 1: <span id="playerXScore"></span></div>
+                <div style="color: dimgray; margin-left: 50px;">Draws: <span id="draws"></span></div>
+                <div style="color: sienna; margin-left: 50px">Player 2: <span id="playerOScore"></span></div>
+            </div>
+            <div style="margin-top: 10px; display: flex; justify-content: center;">
+                <button id="resetScore" style="color: black">Reset Score</button>
+                <button id="clearBoard" style="color: dimgray; margin-left: 50px">Clear Board</button>
+            </div>
+        </div>
+        <script type="text/javascript" defer>
+            let letter = "";
+            let color = "";
+            let marker = 0;
+            const buttonX = document.getElementById("playerX");
+            const buttonO = document.getElementById("playerO");
+            const playerXScore = document.getElementById("playerXScore");
+            const playerOScore = document.getElementById("playerOScore");
+            const draws = document.getElementById("draws");
+            playerXScore.textContent = 0;
+            playerOScore.textContent = 0;
+            draws.textContent = 0;
+            const box10 = document.getElementById("box10");
+            const box11 = document.getElementById("box11");
+            const box12 = document.getElementById("box12");
+            const box20 = document.getElementById("box20");
+            const box21 = document.getElementById("box21");
+            const box22 = document.getElementById("box22");
+            const box30 = document.getElementById("box30");
+            const box31 = document.getElementById("box31");
+            const box32 = document.getElementById("box32");
+            row1 = [0,0,0];
+            row2 = [0,0,0];
+            row3 = [0,0,0];
+            board = [row1, row2, row3];
+
+            buttonX.onclick = function() {
+                letter = "X";
+                color = "royalblue";
+                marker = 1;
+            }
+            buttonO.onclick = function() {
+                letter = "O";
+                color = "sienna";
+                marker = 2;
+            }
+            const resetScore = document.getElementById("resetScore");
+            resetScore.onclick = function() {
+                playerXScore.textContent = 0;
+                playerOScore.textContent = 0;
+                draws.textContent = 0;
+            }
+
+            box10.onclick = function() {
+                box10.textContent = letter;
+                box10.style.color = color;
+                board[0][0] = marker;
+                getWinner();
+            }
+            box11.onclick = function() {
+                box11.textContent = letter;
+                box11.style.color = color;
+                board[0][1] = marker;
+                getWinner();
+            }
+            box12.onclick = function() {
+                box12.textContent = letter;
+                box12.style.color = color;
+                board[0][2] = marker;
+                getWinner();
+            }
+            box20.onclick = function() {
+                box20.textContent = letter;
+                box20.style.color = color;
+                board[1][0] = marker;
+                getWinner();
+            }
+            box21.onclick = function() {
+                box21.textContent = letter;
+                box21.style.color = color;
+                board[1][1] = marker;
+                getWinner();
+            }
+            box22.onclick = function() {
+                box22.textContent = letter;
+                box22.style.color = color;
+                board[1][2] = marker;
+                getWinner();
+            }
+            box30.onclick = function() {
+                box30.textContent = letter;
+                box30.style.color = color;
+                board[2][0] = marker;
+                getWinner();
+            }
+            box31.onclick = function() {
+                box31.textContent = letter;
+                box31.style.color = color;
+                board[2][1] = marker;
+                getWinner();
+            }
+            box32.onclick = function() {
+                box32.textContent = letter;
+                box32.style.color = color;
+                board[2][2] = marker;
+                getWinner();
+            }
+
+            const clearBoard = document.getElementById("clearBoard");
+            clearBoard.onclick = function() {
+                const boxes = document.getElementsByTagName("td");
+                for(let i = 0; i < boxes.length; i++) {
+                    boxes[i].textContent = "";
+                }
+                for(let i = 0; i < board.length; i++) {
+                    for(let j = 0; j < board[0].length; j++) {
+                        board[i][j] = 0;
+                    }
+                }
+            }
+
+            function checkBoardForWin() {
+                let i = 0;
+                let j = 0;
+                for(i = 0; i < board.length; i++) {
+                    let piece = 0;
+                    let lastPiece = 0;
+                    for(j = 0; j < board[0].length; j++) {
+                        if(j == 0) {
+                            lastPiece = board[i][j];
+                            if(lastPiece == 0) {
+                                break;
+                            } else {
+                                continue;
+                            }    
+                        }
+                        if(lastPiece != 0) {
+                            piece = board[i][j];
+                            if(piece == 0) {
+                                break;
+                            } else if(piece != 0) {
+                                if(lastPiece == piece) {
+                                    continue;
+                                } else {
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    if(j == board[0].length) {
+                        return lastPiece;
+                    }
+                }
+
+                for(i = 0; i < board[0].length; i++) {
+                    let piece = 0;
+                    let lastPiece = 0;
+                    for(j = 0; j < board.length; j++) {
+                        if(j == 0) {
+                            lastPiece = board[j][i];
+                            if(lastPiece == 0) {
+                                break;
+                            } else {
+                                continue;
+                            }    
+                        }
+                        if(lastPiece != 0) {
+                            piece = board[j][i];
+                            if(piece == 0) {
+                                break;
+                            } else if(piece != 0) {
+                                if(lastPiece == piece) {
+                                    continue;
+                                } else {
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    if(j == board.length) {
+                        return lastPiece;
+                    }
+                }
+
+                if(board[0][0] != 0 && board[0][0] == board[1][1] && board[1][1] == board[2][2]) {
+                    return board[0][0];
+                } else if(board[2][0] != 0 && board[2][0] == board[1][1] && board[1][1] == board[0][2]) {
+                    return board[2][0];
+                }
+
+                return 0;
+            }
+
+            function isBoardFull() {
+                let breakOut = false;
+                let i = 0;
+                let j = 0;
+                for(i = 0; i < board.length; i++) {
+                    for(j = 0; j < board[0].length; j++) {
+                        if(board[i][j] == 0) {
+                            breakOut = true;
+                            break;
+                        }
+                    }
+                    if(breakOut) {
+                        break;
+                    }
+
+                }
+                
+                if(i == board.length && j == board[0].length) {
+                    return true;
+                }
+
+                return false;
+            }
+
+            function getWinner() {
+                const winner = checkBoardForWin();
+                if(winner == 0 && isBoardFull()) {
+                    let score = draws.textContent;
+                    draws.textContent = ++score;
+                    //alert(score);
+                } else if(winner == 1) {
+                    let score = playerXScore.textContent;
+                    playerXScore.textContent = ++score;
+                    //alert(score);
+                } else if(winner == 2) {
+                    let score = playerOScore.textContent;
+                    const player = document.getElementById("playerOScore");
+                    playerOScore.textContent = ++score;
+                    //alert(score);
+                } else {
+                    ;
+                }
+            }
+        </script>
+    </body>
+</html>
